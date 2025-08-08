@@ -37,11 +37,9 @@ title.addEventListener('mousemove', (e) => {
   const x = e.clientX - rect.left;
   const y = e.clientY - rect.top;
   
-  // Calculate position as percentage
   const xPercent = (x / rect.width) * 100;
   const yPercent = (y / rect.height) * 100;
   
-  // Create radial gradient that follows the cursor
   title.style.background = `radial-gradient(circle at ${xPercent}% ${yPercent}%, 
     #feefa2ff 0%, 
     #f7f7d5ff 10%, 
@@ -57,3 +55,19 @@ title.addEventListener('mouseleave', () => {
   title.style.webkitTextFillColor = 'transparent';
   title.style.backgroundClip = 'text';
 });
+
+
+// ===== Reveal on Scroll =====
+const observer = new IntersectionObserver(
+  (entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target); // reveal only once
+      }
+    });
+  },
+  { root: null, rootMargin: '0px 0px -10% 0px', threshold: 0.12 }
+);
+
+document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));

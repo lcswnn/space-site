@@ -233,7 +233,6 @@ body {
 .lead { 
   font-size: 1.2rem; 
   opacity: .85; 
-  max-width: 70ch; 
 }
 
 .cta-row { 
@@ -250,6 +249,7 @@ body {
   color: var(--white);
   text-decoration: none;
   transition: transform .2s ease, background .2s ease;
+  font-size: 1.2rem;
 }
 
 .btn:hover { 
@@ -284,6 +284,12 @@ body {
   margin-top: .75rem; 
   color: var(--white); 
   opacity: .9; 
+}
+
+.bullet-list {
+  list-style: none;
+  padding-left: 0;
+  margin-left: 0;
 }
 
 .advocacy-header {

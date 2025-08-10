@@ -442,47 +442,84 @@ async function loadNEOs(dateStr = yyyyMmDd()) {
   `;
 
   // ========== Card 1: Next Launch (Launch Library 2) ==========
+  // Optional: a human-friendly source page to send people to
+const LAUNCH_SOURCE_URL = 'https://thespacedevs.com/llapi'; 
+// (If you’d rather link the raw upcoming JSON, use:
+//  'https://ll.thespacedevs.com/2.2.0/launch/upcoming/?hide_recent_previous=true')
+
   async function cardLaunch() {
-    try {
-      const data = await safeFetch(
-        "https://ll.thespacedevs.com/2.2.0/launch/upcoming/?limit=1&hide_recent_previous=true"
-      );
-      const L = data?.results?.[0];
-      if (!L) throw new Error("No launch");
-      const when = fmtUTC(L.net || L.window_start);
-      const name = L.name || "Upcoming launch";
-      const provider = L.launch_service_provider?.name
-        ? ` • ${L.launch_service_provider.name}`
-        : "";
-      const loc = L.pad?.name ? ` — ${L.pad.name}` : "";
-      return makeItem(
-        when,
-        `${name}${provider}${loc}`,
-        L.url || null,
-        "Next Rocket Launch"
-      );
-    } catch {
-      return makeItem("TBD", "Next major launch window", null);
+    const headers = { headers: { Accept: 'application/json' } };
+    const endpoints = [
+      'https://ll.thespacedevs.com/2.2.0/launch/upcoming/?limit=1&hide_recent_previous=true',
+      `https://ll.thespacedevs.com/2.2.0/launch/?limit=1&net__gte=${encodeURIComponent(new Date().toISOString())}&ordering=net`
+    ];
+
+    for (const url of endpoints) {
+      try {
+        const data = await safeFetch(url, headers);
+        const L = data?.results?.[0];
+        if (!L) throw new Error('No result');
+
+        const when = fmtUTC(L.net || L.window_start);
+        const name = L.name || 'Upcoming launch';
+        const provider = L.launch_service_provider?.name ? ` • ${L.launch_service_provider.name}` : '';
+        const loc = L.pad?.name ? ` — ${L.pad.name}` : '';
+        return makeItem(when, `${name}${provider}${loc}`, L.url || LAUNCH_SOURCE_URL, 'Next Rocket Launch');
+      } catch (e) {
+        console.warn('[Launch] failed:', url, e?.message || e);
+      }
     }
+
+    // Fallback: still link to the source so the arrow shows
+    return makeItem(
+      'TBD',
+      'Next major launch window',
+      LAUNCH_SOURCE_URL,
+      'Next Rocket Launch'
+    );
   }
+
+
 
   // ========== Card 2: ISS Pass (Open Notify via proxy) ==========
   // Open Notify is HTTP-only; on HTTPS sites we use a simple CORS proxy.
-  const OPEN_NOTIFY = "http://api.open-notify.org/iss-pass.json";
-  const PROXY = (u) =>
-    `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`;
+  // --- Open Notify (HTTP) -> try several HTTPS proxies
+  const OPEN_NOTIFY = 'http://api.open-notify.org/iss-pass.json';
+
+  async function fetchISSNextPass(lat, lon, n = 1) {
+    const base = `${OPEN_NOTIFY}?lat=${lat.toFixed(4)}&lon=${lon.toFixed(4)}&n=${n}`;
+    const proxies = [
+      u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
+      u => `https://cors.isomorphic-git.org/${u}`,
+      u => `https://thingproxy.freeboard.io/fetch/${u}`,
+      u => `https://corsproxy.io/?${encodeURIComponent(u)}`
+    ];
+
+    let lastErr;
+    for (const wrap of proxies) {
+      const url = wrap(base);
+      try {
+        const r = await fetch(url, { headers: { Accept: 'application/json' } });
+        if (!r.ok) throw new Error(`proxy HTTP ${r.status}`);
+        const data = await r.json();
+        if (data?.response?.length) return data;
+        // sometimes proxies return 200 but empty/garbled payload
+        throw new Error('empty payload from proxy');
+      } catch (e) {
+        lastErr = e;
+        console.warn('[ISS] proxy failed:', url, e?.message || e);
+      }
+    }
+    throw lastErr || new Error('All ISS proxies failed');
+  }
 
   async function getPosition() {
-    // browser geolocation (fast) → fallback to a default location
-    const fallback = { coords: { latitude: 40.7128, longitude: -74.006 } }; // NYC fallback
+    const fallback = { coords: { latitude: 40.7128, longitude: -74.0060 } }; // NYC
     try {
       const pos = await new Promise((res, rej) =>
         navigator.geolocation
-          ? navigator.geolocation.getCurrentPosition(res, rej, {
-              enableHighAccuracy: true,
-              timeout: 7000,
-            })
-          : rej(new Error("geo unsupported"))
+          ? navigator.geolocation.getCurrentPosition(res, rej, { enableHighAccuracy: true, timeout: 7000 })
+          : rej(new Error('geo unsupported'))
       );
       return pos || fallback;
     } catch {
@@ -490,39 +527,35 @@ async function loadNEOs(dateStr = yyyyMmDd()) {
     }
   }
 
+
   async function cardISS() {
     try {
-      const {
-        coords: { latitude: lat, longitude: lon },
-      } = await getPosition();
-      const url = `${OPEN_NOTIFY}?lat=${lat}&lon=${lon}&n=1`;
-      const data = await safeFetch(PROXY(url)); // wrap to avoid mixed-content/CORS
-      const pass = data?.response?.[0];
-      if (!pass) throw new Error("No pass");
+      const { coords: { latitude: lat, longitude: lon } } = await getPosition();
+      const data = await fetchISSNextPass(lat, lon, 1);
+      const pass = data.response[0];
       const t = new Date(pass.risetime * 1000);
-      const label =
-        t.toLocaleString(undefined, {
-          month: "short",
-          day: "2-digit",
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: false,
-        }) + " (local)";
+      const label = t.toLocaleString(undefined, {
+        month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false
+      }) + ' (local)';
       const mins = Math.round((pass.duration || 0) / 60);
+
       return makeItem(
         label,
         `Next ISS pass near you • ~${mins} min visible`,
-        "https://spotthestation.nasa.gov/sightings/",
-        "ISS Pass"
+        'https://spotthestation.nasa.gov/sightings/',
+        'ISS Pass'
       );
-    } catch {
+    } catch (e) {
+      console.warn('[ISS] falling back:', e?.message || e);
       return makeItem(
-        "Monthly",
-        "ISS visible passes (varies by location)",
-        "https://spotthestation.nasa.gov/"
+        'Monthly',
+        'ISS visible passes (varies by location)',
+        'https://spotthestation.nasa.gov/',
+        'ISS Pass'
       );
     }
   }
+
 
   // ========== Card 3: Space Weather (DONKI GST/CME recent) ==========
   async function cardSpaceWeather() {

@@ -23,16 +23,16 @@
             <a href="index.html" class="nav-link">Home</a>
           </li>
           <li class="nav-item">
-            <a href="#asteroids" class="nav-link">Asteroids</a>
+            <a href="#highlights" class="nav-link">Highlights</a>
+          </li>
+          <li class="nav-item">
+            <a href="#asteroids" class="nav-link">NeoWs</a>
           </li>
           <li class="nav-item">
             <a href="#gallery" class="nav-link">APOD</a>
           </li>
           <li class="nav-item">
             <a href="#advocacy" class="nav-link">Advocacy</a>
-          </li>
-          <li class="nav-item">
-            <a href="#contact" class="nav-link">Contact</a>
           </li>
         </ul>
         <div class="hamburger">
@@ -55,8 +55,7 @@
           involved.
         </p>
         <div class="cta-row">
-          <a href="asteroid.html" class="btn">Explore the Universe</a>
-          <a href="#advocacy" class="btn btn-ghost">Get Involved</a>
+          <a href="#advocacy" class="btn">Get Involved</a>
         </div>
       </div>
     </section>
@@ -64,23 +63,78 @@
     <section id="highlights" class="section reveal">
       <div class="section-inner">
         <h2 class="section-title">Highlights</h2>
-        <div class="card-grid">
-          <article class="card reveal" data-delay="100">
-            <h3>Image of the Day</h3>
-            <p>Stunning cosmic shots updated daily from public APIs.</p>
-            <a href="#gallery" class="card-link">See Gallery →</a>
-          </article>
-          <article class="card reveal" data-delay="200">
-            <h3>Upcoming Sky Events</h3>
-            <p>Meteor showers, planet pairings, and launch windows.</p>
-            <a href="#events" class="card-link">View Calendar →</a>
-          </article>
-          <article class="card reveal" data-delay="300">
-            <h3>Near-Earth Objects</h3>
-            <p>Track close approaches and learn how we monitor them.</p>
-            <a href="asteroid.html" class="card-link">Track Now →</a>
-          </article>
+        <div class="timeline">
+          <div class="t-item reveal" data-delay="100">
+            <span class="t-date">Aug 12–13</span>
+            <span class="t-short">Next Rocket Launch</span>
+            <span class="t-text">Perseid meteor shower peak</span>
+          </div>
+          <div class="t-item reveal" data-delay="200">
+            <span class="t-date">Monthly</span>
+            <span class="t-short">Next Rocket Launch</span>
+            <span class="t-text">ISS visible passes (varies by location)</span>
+          </div>
+          <div class="t-item reveal" data-delay="300">
+            <span class="t-date">TBD</span>
+            <span class="t-short">Next Rocket Launch</span>
+            <span class="t-text">Next major launch window</span>
+          </div>
+          <div class="t-item reveal" data-delay="300">
+            <span class="t-date">TBD</span>
+            <span class="t-short">Next Rocket Launch</span>
+            <span class="t-text">Next major launch window</span>
+          </div>
         </div>
+      </div>
+    </section>
+
+    <section id="asteroids" class="section reveal">
+      <h2 class="section-title">NeoWs - Near Earth Object Tracker</h2>
+      <p>
+        <strong>Near-Earth Objects Tracker:</strong> This section pulls live data from NASA’s
+        Near-Earth Object Web Service (NeoWs) to show asteroids and other
+        objects passing close to Earth on the selected date.
+      </p>
+      <div class="section-inner">
+        <div class="neo-controls">
+          <label>
+            Date:
+            <input type="date" id="neo-date" />
+          </label>
+          <button class="btn" id="neo-refresh">Refresh</button>
+        </div>
+        <div class="unit-toggle" role="group" aria-label="Units">
+          <button
+            class="btn btn-ghost unit-btn"
+            data-unit="imperial"
+            aria-pressed="false"
+          >
+            Imperial
+          </button>
+          <button
+            class="btn btn-ghost unit-btn"
+            data-unit="metric"
+            aria-pressed="true"
+          >
+            Metric
+          </button>
+        </div>
+        <div class="neo-stats" id="neo-stats">
+          <span id="neo-count" class="chip">0 objects</span>
+          <span id="neo-hazard" class="chip chip-warn"
+            >0 potentially hazardous</span
+          >
+        </div>
+        <div class="neo-grid" id="neo-grid">
+          <!-- cards injected by JS -->
+        </div>
+        <p class="neo-note">
+          Data from NASA’s
+          <a href="https://api.nasa.gov/" target="_blank" rel="noopener"
+            >NeoWs</a
+          >. Distances are minimum miss distance for each close approach listed
+          for the selected date.
+        </p>
       </div>
     </section>
 
@@ -103,7 +157,9 @@
       <div class="section-inner">
         <h2 class="section-title">Advocacy</h2>
         <ul class="bullet-list">
-          <h3 class="advocacy-header">Support space education in local schools.</h3>
+          <h3 class="advocacy-header">
+            Support space education in local schools.
+          </h3>
           <p class="advocacy-sub">
             Partner with educators, museums, and STEM organizations to integrate
             engaging space science programs into the curriculum. Provide funding
@@ -121,7 +177,9 @@
             that humanity is prepared to prevent or mitigate potential asteroid
             impacts.
           </p>
-          <h3 class="advocacy-header">Encourage open access to mission data.</h3>
+          <h3 class="advocacy-header">
+            Encourage open access to mission data.
+          </h3>
           <p class="advocacy-sub">
             Push for transparency and free availability of scientific data from
             government and privately funded space missions. Open data fosters
@@ -130,27 +188,12 @@
             and understanding of space.
           </p>
         </ul>
-        <a href="https://www.planetary.org/space-policy-advocacy" target="_blank" class="btn btn-ghost">Advocate Today</a>
-      </div>
-    </section>
-
-    <section id="events" class="section reveal">
-      <div class="section-inner">
-        <h2 class="section-title">Upcoming Events</h2>
-        <div class="timeline">
-          <div class="t-item reveal" data-delay="100">
-            <span class="t-date">Aug 12–13</span>
-            <span class="t-text">Perseid meteor shower peak</span>
-          </div>
-          <div class="t-item reveal" data-delay="200">
-            <span class="t-date">Monthly</span>
-            <span class="t-text">ISS visible passes (varies by location)</span>
-          </div>
-          <div class="t-item reveal" data-delay="300">
-            <span class="t-date">TBD</span>
-            <span class="t-text">Next major launch window</span>
-          </div>
-        </div>
+        <a
+          href="https://www.planetary.org/space-policy-advocacy"
+          target="_blank"
+          class="btn"
+          >Advocate Today</a
+        >
       </div>
     </section>
 

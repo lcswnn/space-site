@@ -23,10 +23,10 @@
             <a href="index.html" class="nav-link">Home</a>
           </li>
           <li class="nav-item">
-            <a href="asteroid.html" class="nav-link">Asteroids</a>
+            <a href="#asteroids" class="nav-link">Asteroids</a>
           </li>
           <li class="nav-item">
-            <a href="#gallery" class="nav-link">Gallery</a>
+            <a href="#gallery" class="nav-link">APOD</a>
           </li>
           <li class="nav-item">
             <a href="#advocacy" class="nav-link">Advocacy</a>
@@ -51,10 +51,11 @@
         <h2 class="section-title">Our Mission</h2>
         <p class="lead">
           Stellar Nexus connects space fans, researchers, and creators. We turn
-          raw data into stories—asteroids, imagery, launches, and ways to get involved.
+          raw data into stories—asteroids, imagery, launches, and ways to get
+          involved.
         </p>
         <div class="cta-row">
-          <a href="asteroid.html" class="btn">Explore Asteroids</a>
+          <a href="asteroid.html" class="btn">Explore the Universe</a>
           <a href="#advocacy" class="btn btn-ghost">Get Involved</a>
         </div>
       </div>
@@ -85,17 +86,15 @@
 
     <section id="gallery" class="section reveal">
       <div class="section-inner">
-        <h2 class="section-title">Gallery Preview</h2>
-        <div class="thumb-grid">
-          <div class="thumb skeleton"></div>
-          <div class="thumb skeleton"></div>
-          <div class="thumb skeleton"></div>
-          <div class="thumb skeleton"></div>
-          <div class="thumb skeleton"></div>
-          <div class="thumb skeleton"></div>
-        </div>
-        <div class="center">
-          <a href="#gallery" class="btn">Open Full Gallery</a>
+        <h2 class="section-title">NASA's Image of the Day</h2>
+        <div class="apod-wrap">
+          <figure class="apod-card loading" id="apod-container">
+            <div class="apod-media"></div>
+            <figcaption id="apod-title"></figcaption>
+            <a id="apod-link" class="apod-btn-img" target="_blank"
+              >View Full Image</a
+            >
+          </figure>
         </div>
       </div>
     </section>
@@ -104,11 +103,34 @@
       <div class="section-inner">
         <h2 class="section-title">Advocacy</h2>
         <ul class="bullet-list">
-          <li>Support space education in local schools.</li>
-          <li>Promote planetary defense research.</li>
-          <li>Encourage open access to mission data.</li>
+          <h3 class="advocacy-header">Support space education in local schools.</h3>
+          <p class="advocacy-sub">
+            Partner with educators, museums, and STEM organizations to integrate
+            engaging space science programs into the curriculum. Provide funding
+            for telescopes, planetarium visits, and hands-on workshops so
+            students can explore astronomy, rocketry, and planetary science.
+            Inspire curiosity about the universe and cultivate the next
+            generation of scientists, engineers, and explorers.
+          </p>
+          <h3 class="advocacy-header">Promote planetary defense research.</h3>
+          <p class="advocacy-sub">
+            Advocate for funding and collaboration between government agencies,
+            universities, and private companies to detect, track, and study
+            near-Earth objects (NEOs). Support missions that test asteroid
+            deflection techniques and improve early-warning systems, ensuring
+            that humanity is prepared to prevent or mitigate potential asteroid
+            impacts.
+          </p>
+          <h3 class="advocacy-header">Encourage open access to mission data.</h3>
+          <p class="advocacy-sub">
+            Push for transparency and free availability of scientific data from
+            government and privately funded space missions. Open data fosters
+            global collaboration, accelerates discovery, and allows educators,
+            researchers, and citizen scientists to contribute to the exploration
+            and understanding of space.
+          </p>
         </ul>
-        <a href="#contact" class="btn btn-ghost">Contact Us</a>
+        <a href="https://www.planetary.org/space-policy-advocacy" target="_blank" class="btn btn-ghost">Advocate Today</a>
       </div>
     </section>
 
@@ -133,9 +155,9 @@
     </section>
 
     <footer id="contact" class="footer reveal">
-      <div class="section-inner">
-        <h2 class="section-title">Contact</h2>
-        <p>Email: hello@stellarnexus.example</p>
+      <div class="footer-section-inner">
+        <p>Email: lucaswaunn@gmail.com</p>
+        <p>Planetary Society: Lucas Waunn</p>
       </div>
     </footer>
   </body>

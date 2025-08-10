@@ -7,6 +7,24 @@ hamburger.addEventListener('click', () => {
   navMenu.classList.toggle('active');
 });
 
+let lastScrollTop = 0;
+const navbar = document.querySelector('.navbar');
+
+window.addEventListener('scroll', () => {
+  const scrollTop = window.scrollY || document.documentElement.scrollTop;
+
+  if (scrollTop > lastScrollTop && scrollTop > 80) {
+    // Scrolling down
+    navbar.classList.add('hide');
+  } else {
+    // Scrolling up
+    navbar.classList.remove('hide');
+  }
+
+  lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; // Avoid negative scroll
+});
+
+
 // Close menu when clicking on a link
 document.querySelectorAll('.nav-link').forEach(link => {
   link.addEventListener('click', () => {
@@ -41,7 +59,7 @@ title.addEventListener('mousemove', (e) => {
   const yPercent = (y / rect.height) * 100;
   
   title.style.background = `radial-gradient(circle at ${xPercent}% ${yPercent}%, 
-    #feefa2ff 0%, 
+    rgb(254, 234, 132) 0%, 
     #f7f7d5ff 10%, 
     var(--white) 30%)`;
   title.style.webkitBackgroundClip = 'text';
@@ -71,3 +89,53 @@ const observer = new IntersectionObserver(
 );
 
 document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
+(async function loadAPOD() {
+  const container = document.getElementById('apod-container');
+  const media = container.querySelector('.apod-media');
+  const captionEl = container.querySelector('#apod-title');
+  const linkEl = container.querySelector('#apod-link');
+
+  try {
+    const res = await fetch('https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY&thumbs=true');
+    if (!res.ok) throw new Error(`APOD HTTP ${res.status}`);
+    const data = await res.json();
+
+    // Choose the best image URL
+    let url =
+      data.media_type === 'image'
+        ? (data.hdurl || data.url)
+        : data.thumbnail_url; // when it's a video
+
+    // If API throttled or fields missing
+    if (!url) throw new Error('No image URL in APOD payload');
+
+    // Avoid mixed content (http on https site)
+    url = url.replace(/^http:\/\//i, 'https://');
+
+    // Build image
+    const img = new Image();
+    img.alt = data.title || 'Astronomy Picture of the Day';
+    img.referrerPolicy = 'no-referrer';
+    img.onload = () => container.classList.remove('loading');
+    img.onerror = () => {
+      container.classList.remove('loading');
+      captionEl.textContent = 'Failed to load APOD image.';
+    };
+    img.src = url;
+
+    // Insert only into the media area
+    media.innerHTML = '';
+    media.appendChild(img);
+
+    // Caption + link
+    captionEl.textContent = data.title || '';
+    linkEl.href = (data.hdurl || data.url || url);
+  } catch (err) {
+    console.warn(err);
+    container.classList.remove('loading');
+    media.innerHTML = '';
+    captionEl.textContent = 'APOD unavailable right now. Try again later.';
+    linkEl.removeAttribute('href');
+  }
+})();
+
